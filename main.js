@@ -1,40 +1,78 @@
-const loginBtn = document.getElementById('login-btn');
-const raInput = document.getElementById('ra');
-const loginSection = document.getElementById('login-section');
-const progressSection = document.getElementById('progress-section');
-const progressBar = document.getElementById('progress');
-const cronometro = document.getElementById('cronometro');
-const status = document.getElementById('status');
+const backendURL = 'https://node-express-production-b087.up.railway.app';
 
-let apiKey = '';
-let atividades = [];
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const ra = document.getElementById('ra').value.trim();
+  const senha = document.getElementById('senha').value.trim();
 
-loginBtn.onclick = async () => {
-  const ra = raInput.value.trim();
-  if (!ra) return alert('Digite seu RA');
+  const response = await fetch(`${backendURL}/api/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ra, senha })
+  });
 
-  const loginPayload = {
-    registration_code: ra
-  };
+  const data = await response.json();
+  if (data.success) {
+    localStorage.setItem('token', data.token);
+    loadActivities();
+  } else {
+    alert('Erro ao fazer login.');
+  }
+});
 
-  try {
-    const loginRes = await fetch('https://edusp-api.ip.tv/registration/edusp', {
+async function loadActivities() {
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('activitySection').classList.remove('hidden');
+
+  const res = await fetch(`${backendURL}/api/atividades`, {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    }
+  });
+
+  const atividades = await res.json();
+  const container = document.getElementById('activitiesContainer');
+  container.innerHTML = '';
+
+  atividades.forEach((atividade, index) => {
+    const el = document.createElement('div');
+    el.innerHTML = `<label><input type="checkbox" value="${atividade.id}" checked /> ${atividade.nome}</label>`;
+    container.appendChild(el);
+  });
+}
+
+document.getElementById('startActivities').addEventListener('click', async () => {
+  const tempo = parseInt(document.getElementById('studyTime').value);
+  const checkboxes = document.querySelectorAll('#activitiesContainer input[type=checkbox]:checked');
+  if (!checkboxes.length) return alert('Selecione pelo menos uma atividade.');
+
+  const atividades = [...checkboxes].map(cb => cb.value);
+  document.getElementById('activitySection').classList.add('hidden');
+  document.getElementById('progressSection').classList.remove('hidden');
+
+  const tempoPorAtividade = Math.floor((tempo * 60) / atividades.length);
+
+  for (let i = 0; i < atividades.length; i++) {
+    document.getElementById('progressStatus').innerText = `Resolvendo atividade ${i + 1} de ${atividades.length}...`;
+    await new Promise(res => setTimeout(res, tempoPorAtividade * 1000));
+
+    await fetch(`${backendURL}/api/responder`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-platform': 'webclient',
-        'x-api-realm': 'edusp',
-        'x-client-domain': 'cryptitys.github.io',
-        'x-client-signature': btoa(Date.now().toString()),
-        'x-client-timestamp': Date.now().toString(),
-        'x-request-id': Math.random().toString(36).substring(2)
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       },
-      body: JSON.stringify(loginPayload)
+      body: JSON.stringify({ atividadeId: atividades[i], status: 'completed' })
     });
+  }
 
-    const loginData = await loginRes.json();
-    apiKey = loginData.token;
+  document.getElementById('progressStatus').innerText = 'Todas as atividades foram concluídas!';
+});
 
+function togglePassword() {
+  const pass = document.getElementById('senha');
+  pass.type = pass.type === 'password' ? 'text' : 'password';
+                                       }
     if (!apiKey) throw new Error("Falha no login");
 
     loginSection.classList.add('hidden');
