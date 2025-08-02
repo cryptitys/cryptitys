@@ -5,36 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cryptitys</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <h1 class="title">Cryptitys</h1>
     <p class="subtitle">Automatizador para atividades da Sala do Futuro</p>
 
-    <form id="loginForm" class="login-form">
-      <input type="text" id="ra" placeholder="RA + dígito + sp" required />
-      <div class="password-group">
-        <input type="password" id="senha" placeholder="Senha" required />
-        <span class="toggle-eye" onclick="togglePassword()">👁</span>
-      </div>
+    <form id="loginForm" class="form">
+      <label>RA
+        <input type="text" id="raInput" required placeholder="RA + dígito + sp" />
+      </label>
+      <label>Senha
+        <div class="password-wrapper">
+          <input type="password" id="passwordInput" required placeholder="Senha" />
+          <span id="togglePassword">👁️</span>
+        </div>
+      </label>
       <button type="submit">Entrar e Ver Atividades</button>
     </form>
 
     <div id="activitySection" class="hidden">
-      <h2>Atividades</h2>
-      <div id="activitiesContainer"></div>
-      <div class="time-controls">
-        <label>Tempo total (min):</label>
-        <input type="number" id="studyTime" value="5" min="1" max="60" />
+      <div class="options">
+        <label><input type="checkbox" id="selectAll" /> Selecionar Todas as Atividades</label>
+        <div>
+          Tempo de Estudo por Atividade:
+          <input type="number" id="studyTime" value="5" min="1" max="60" /> minutos
+        </div>
       </div>
-      <button id="startActivities">Iniciar Automação</button>
+
+      <ul id="activityList"></ul>
+      <button id="executeSelected">Executar Selecionadas</button>
     </div>
 
-    <div id="progressSection" class="hidden">
-      <h2>Resolvendo Atividades...</h2>
-      <div id="progressStatus">Aguardando...</div>
-    </div>
+    <footer>Cryptitys © 2025 — Automação pessoal sem rastreamento</footer>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>    </div>
 
     <footer>Cryptitys © 2025 — Automação pessoal sem rastreamento</footer>
   </div>
