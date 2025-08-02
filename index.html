@@ -1,39 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cryptitys</title>
-    <link rel="stylesheet" href="styles.css?v=72">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="favicon.png">
-    <script
-    src="https://js.sentry-cdn.com/8d38ce047555b74bc9ae8c98ff73bb3c.min.js"
-    crossorigin="anonymous"
-    ></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cryptitys</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <h1 data-text="Taskitos">Taskitos</h1>
-                <p class="subtitle">para sala do futuro e cmsp!</p>
-            </div>
-        </header>
+  <div class="container">
+    <header class="header">
+      <h1>Cryptitys</h1>
+      <p class="subtitle">Automatizador para atividades da Sala do Futuro</p>
+    </header>
 
-        <section id="loginSection" class="section">
-            <div class="login-container">
-                <h2>Login</h2>
-                <form id="loginForm" class="login-form">
-                    <div class="input-group">
-                        <label for="studentId">RA</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="studentId" placeholder="RA + dígito + sp | ex: 123456790sp" required>
-                            <button type="button" id="clearStudentId" class="clear-btn hidden">×</button>
-                        </div>
-                    </div>
-                    
-                    <div class="input-group">
+    <section id="loginSection" class="section">
+      <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm" class="login-form">
+          <div class="input-group">
+            <label for="studentId">RA</label>
+            <div class="input-wrapper">
+              <input type="text" id="studentId" placeholder="RA + dígito + sp" required>
+              <button type="button" id="clearStudentId" class="clear-btn hidden">&times;</button>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Senha</label>
+            <div class="input-wrapper">
+              <input type="password" id="password" placeholder="Senha" required>
+              <button type="button" id="togglePassword" class="toggle-btn">👁</button>
+              <button type="button" id="clearPassword" class="clear-btn hidden">&times;</button>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button type="button" id="loginNormal" class="btn btn-secondary">Entrar e Ver Atividades</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <div id="activityModal" class="modal hidden">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h2>Selecionar Atividades</h2>
+          <button class="close-btn" id="closeActivityModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="activity-list">
+            <div class="select-all">
+              <label>
+                <input type="checkbox" id="selectAll"> Selecionar Todas as Atividades
+              </label>
+            </div>
+            <div id="activityItems" class="activity-items"></div>
+          </div>
+          <div class="time-settings">
+            <h3>Tempo de Estudo por Atividade</h3>
+            <div class="input-group">
+              <input type="number" id="studyTime" value="5" min="1" max="60"> minutos
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button id="startSelected" class="btn btn-secondary">Executar Selecionadas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="progressOverlay" class="overlay hidden">
+      <div class="progress-content">
+        <h2>Processando Atividades</h2>
+        <div class="spinner"></div>
+        <div class="progress-info">
+          <div id="currentActivity" class="current-activity">Preparando...</div>
+          <div class="progress-stats">
+            <span id="progressCounter">0 de 0</span>
+          </div>
+          <div id="progressStatus" class="progress-status">
+            Aguarde enquanto as atividades são processadas.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Cryptitys &copy; 2025 — Automação pessoal sem rastreamento</p>
+    </footer>
+
+    <script src="main.js"></script>
+  </div>
+</body>
+</html>
                         <label for="password">Senha</label>
                         <div class="input-wrapper">
                             <input type="password" id="password" placeholder="Senha" required>
