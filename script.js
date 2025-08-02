@@ -1,40 +1,135 @@
-let token = '';
+const loginBtn = document.getElementById('login-btn');
+const raInput = document.getElementById('ra');
+const loginSection = document.getElementById('login-section');
+const progressSection = document.getElementById('progress-section');
+const progressBar = document.getElementById('progress');
+const cronometro = document.getElementById('cronometro');
+const status = document.getElementById('status');
+
+let apiKey = '';
 let atividades = [];
 
-document.getElementById('login-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const ra = document.getElementById('ra').value;
-  const senha = document.getElementById('senha').value;
+loginBtn.onclick = async () => {
+  const ra = raInput.value.trim();
+  if (!ra) return alert('Digite seu RA');
 
-  const login = await fetch('https://edusp-api.ip.tv/auth/login', {
+  const loginPayload = {
+    registration_code: ra
+  };
+
+  try {
+    const loginRes = await fetch('https://edusp-api.ip.tv/registration/edusp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-platform': 'webclient',
+        'x-api-realm': 'edusp',
+        'x-client-domain': 'cryptitys.github.io',
+        'x-client-signature': btoa(Date.now().toString()),
+        'x-client-timestamp': Date.now().toString(),
+        'x-request-id': Math.random().toString(36).substring(2)
+      },
+      body: JSON.stringify(loginPayload)
+    });
+
+    const loginData = await loginRes.json();
+    apiKey = loginData.token;
+
+    if (!apiKey) throw new Error("Falha no login");
+
+    loginSection.classList.add('hidden');
+    progressSection.classList.remove('hidden');
+
+    buscarAtividades();
+  } catch (err) {
+    alert("Erro ao logar");
+    console.error(err);
+  }
+};
+
+async function buscarAtividades() {
+  const res = await fetch('https://edusp-api.ip.tv/tms/task/todo?expired_only=false&limit=100&filter_expired=true&offset=0', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'x-client-domain': 'cryptitys.github.io',
+      'x-client-signature': btoa(Date.now().toString()),
+      'x-client-timestamp': Date.now().toString(),
+      'x-request-id': Math.random().toString(36).substring(2)
+    }
+  });
+
+  const data = await res.json();
+  atividades = data.items || [];
+  if (atividades.length === 0) {
+    status.innerText = "Nenhuma atividade encontrada.";
+    return;
+  }
+
+  responderTodas(0);
+}
+
+function responderTodas(index) {
+  if (index >= atividades.length) {
+    status.innerText = "✅ Todas as atividades foram concluídas!";
+    progressBar.style.width = '100%';
+    cronometro.innerText = "✔️ Finalizado";
+    return;
+  }
+
+  const atividade = atividades[index];
+  status.innerText = `Respondendo: ${atividade.name || 'Atividade #' + (index + 1)}`;
+  let tempoRestante = 300; // 5 minutos
+
+  const intervalo = setInterval(() => {
+    tempoRestante--;
+    const minutos = String(Math.floor(tempoRestante / 60)).padStart(2, '0');
+    const segundos = String(tempoRestante % 60).padStart(2, '0');
+    cronometro.innerText = `⏳ ${minutos}:${segundos}`;
+
+    progressBar.style.width = `${((300 - tempoRestante) / 300) * 100}%`;
+
+    if (tempoRestante <= 0) {
+      clearInterval(intervalo);
+      enviarResposta(atividade, () => responderTodas(index + 1));
+    }
+  }, 1000);
+}
+
+function enviarResposta(atividade, callback) {
+  const respostaCorreta = extrairRespostaCorreta(atividade);
+  fetch(`https://edusp-api.ip.tv/tms/task/${atividade.id}/answer`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: ra, password: senha })
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'x-client-domain': 'cryptitys.github.io',
+      'x-client-signature': btoa(Date.now().toString()),
+      'x-client-timestamp': Date.now().toString(),
+      'x-request-id': Math.random().toString(36).substring(2)
+    },
+    body: JSON.stringify({
+      answers: [respostaCorreta],
+      status: "completed"
+    })
+  }).then(() => {
+    callback();
+  }).catch(err => {
+    console.error("Erro ao enviar resposta:", err);
+    callback();
   });
-  const data = await login.json();
-  token = data.token;
+}
 
-  const userId = data.user.id;
-  const atividadesRes = await fetch(`https://edusp-api.ip.tv/todo?expired_only=false&publication_target=${userId}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  atividades = await atividadesRes.json();
-
-  document.getElementById('login-section').classList.add('hidden');
-  document.getElementById('atividades-section').classList.remove('hidden');
-
-  const lista = document.getElementById('lista-atividades');
-  atividades.forEach((a, i) => {
-    const li = document.createElement('li');
-    li.textContent = a.title || `Atividade ${i + 1}`;
-    lista.appendChild(li);
-  });
-});
-
-document.getElementById('executar').addEventListener('click', async () => {
-  const tempo = parseInt(document.getElementById('tempo-total').value);
-  const porAtividade = Math.floor((tempo * 60) / atividades.length);
-
+function extrairRespostaCorreta(atividade) {
+  // Lógica fake para simulação — substitua se tiver mapeamento real
+  const alternativas = atividade.alternatives || [];
+  const correta = alternativas.find(alt => alt.is_correct) || alternativas[0];
+  return {
+    question_id: atividade.id,
+    alternative_id: correta.id
+  };
+      }
   document.getElementById('atividades-section').classList.add('hidden');
   document.getElementById('execucao-section').classList.remove('hidden');
 
