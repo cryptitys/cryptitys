@@ -3,38 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cryptitys - Sala do Futuro</title>
+  <title>Cryptitys</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.png">
 </head>
 <body>
   <div class="container">
-    <h1>🔒 Cryptitys</h1>
-    <div id="login-section">
-      <input type="text" id="ra" placeholder="Digite seu RA" />
-      <button id="login-btn">Entrar</button>
-    </div>
-    <div id="progress-section" class="hidden">
-      <h2>Progresso das Atividades</h2>
-      <div id="status"></div>
-      <div class="progress-bar">
-        <div id="progress" class="progress"></div>
+    <h1 class="title">Cryptitys</h1>
+    <p class="subtitle">Automatizador para atividades da Sala do Futuro</p>
+
+    <form id="loginForm" class="login-form">
+      <input type="text" id="ra" placeholder="RA + dígito + sp" required />
+      <div class="password-group">
+        <input type="password" id="senha" placeholder="Senha" required />
+        <span class="toggle-eye" onclick="togglePassword()">👁</span>
       </div>
-      <p id="cronometro">⏳ 5:00</p>
+      <button type="submit">Entrar e Ver Atividades</button>
+    </form>
+
+    <div id="activitySection" class="hidden">
+      <h2>Atividades</h2>
+      <div id="activitiesContainer"></div>
+      <div class="time-controls">
+        <label>Tempo total (min):</label>
+        <input type="number" id="studyTime" value="5" min="1" max="60" />
+      </div>
+      <button id="startActivities">Iniciar Automação</button>
     </div>
+
+    <div id="progressSection" class="hidden">
+      <h2>Resolvendo Atividades...</h2>
+      <div id="progressStatus">Aguardando...</div>
+    </div>
+
+    <footer>Cryptitys © 2025 — Automação pessoal sem rastreamento</footer>
   </div>
+
   <script src="main.js"></script>
 </body>
-</html>      <h2>✅ Todas as atividades foram concluídas!</h2>
-    </section>
-  </main>
-
-  <script src="script.js"></script>
-</body>
-</html>    </section>
-
-    <div id="activityModal" class="modal hidden">
-      <div class="modal-content large">
-        <div class="modal-header">
+</html>        <div class="modal-header">
           <h2>Selecionar Atividades</h2>
           <button class="close-btn" id="closeActivityModal">&times;</button>
         </div>
