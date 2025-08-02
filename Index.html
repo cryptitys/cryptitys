@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cryptitys</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="favicon.png" />
+  <script src="https://cdn.jsdelivr.net/npm/altcha@latest/dist/altcha.min.js" type="module" async defer></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔒 Cryptitys</h1>
+      <p>Simulador de atividades da Sala do Futuro</p>
+    </header>
+
+    <main>
+      <section class="login-box">
+        <h2>Login</h2>
+        <input type="text" id="raInput" placeholder="RA completo (ex: 123456789sp)" />
+        <input type="password" id="senhaInput" placeholder="Senha" />
+
+        <altcha-widget challengeurl="/api/altcha/challenge" auto="onfocus" hidefooter hidelogo language="pt-BR" expire="120000"></altcha-widget>
+
+        <button id="btnLogin">Entrar</button>
+      </section>
+
+      <section id="atividadesSection" class="hidden">
+        <h2>Atividades</h2>
+        <div id="listaAtividades"></div>
+        <label for="tempo">Tempo por atividade (min)</label>
+        <input type="number" id="tempo" value="2" min="1" max="15" />
+        <button id="executarBtn">Executar Atividades</button>
+      </section>
+
+      <section id="statusSection" class="hidden">
+        <h2>Status</h2>
+        <p id="statusMsg">Aguardando...</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>Feito por você, com ♥</p>
+    </footer>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
