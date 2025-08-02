@@ -1,40 +1,78 @@
-(() => {
-  const d = document;
-  
-  const $ra = d.getElementById("studentId"),
-        $senha = d.getElementById("password"),
-        $btnLogin = d.getElementById("loginNormal"),
-        $ativSec = d.getElementById("painel"),
-        $atividadesContainer = d.getElementById("atividades"),
-        $iniciarBtn = d.getElementById("iniciar"),
-        $statusSec = d.getElementById("status"),
-        $msg = d.getElementById("progresso"),
-        $cronometro = d.createElement("span"),
-        $progressCounter = d.getElementById("progressCounter"),
-        $currentActivity = d.getElementById("currentActivity");
+let token = '';
+let atividades = [];
 
-  let atividades = [];
-  let tempoTotal = 5 * 60; // 5 minutos por padrão
-  let tempoRestante = 0;
-  let atividadeAtual = 0;
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const ra = document.getElementById('ra').value;
+  const senha = document.getElementById('senha').value;
 
-  // Função para buscar as atividades pendentes
-  const buscarAtividades = async (token) => {
-    const response = await fetch('https://edusp-api.ip.tv/tms/task/todo', {
-      headers: { 'x-api-key': token },
+  const login = await fetch('https://edusp-api.ip.tv/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: ra, password: senha })
+  });
+  const data = await login.json();
+  token = data.token;
+
+  const userId = data.user.id;
+  const atividadesRes = await fetch(`https://edusp-api.ip.tv/todo?expired_only=false&publication_target=${userId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  atividades = await atividadesRes.json();
+
+  document.getElementById('login-section').classList.add('hidden');
+  document.getElementById('atividades-section').classList.remove('hidden');
+
+  const lista = document.getElementById('lista-atividades');
+  atividades.forEach((a, i) => {
+    const li = document.createElement('li');
+    li.textContent = a.title || `Atividade ${i + 1}`;
+    lista.appendChild(li);
+  });
+});
+
+document.getElementById('executar').addEventListener('click', async () => {
+  const tempo = parseInt(document.getElementById('tempo-total').value);
+  const porAtividade = Math.floor((tempo * 60) / atividades.length);
+
+  document.getElementById('atividades-section').classList.add('hidden');
+  document.getElementById('execucao-section').classList.remove('hidden');
+
+  for (let i = 0; i < atividades.length; i++) {
+    const atv = atividades[i];
+    document.getElementById('atividade-atual').textContent = `Respondendo: ${atv.title || 'Atividade ' + (i + 1)}`;
+    await cronometro(porAtividade);
+
+    await fetch(`https://edusp-api.ip.tv/todo/${atv.id}/response`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ status: 'completed', response: 'resposta automática' })
     });
-    const data = await response.json();
-    atividades = data.tasks; // Exemplo de estrutura, você pode ajustar conforme necessário
-    renderizarAtividades();
-  };
+  }
 
-  // Função para exibir a lista de atividades
-  const renderizarAtividades = () => {
-    $atividadesContainer.innerHTML = '';
-    atividades.forEach((atividade, i) => {
-      const label = document.createElement("label");
-      label.innerHTML = `<input type="checkbox" id="atividade_${i}"> ${atividade.name}`;
-      $atividadesContainer.appendChild(label);
+  document.getElementById('execucao-section').classList.add('hidden');
+  document.getElementById('fim-section').classList.remove('hidden');
+});
+
+function cronometro(segundos) {
+  return new Promise(resolve => {
+    let restante = segundos;
+    const el = document.getElementById('cronometro');
+    const timer = setInterval(() => {
+      const m = String(Math.floor(restante / 60)).padStart(2, '0');
+      const s = String(restante % 60).padStart(2, '0');
+      el.textContent = `${m}:${s}`;
+      restante--;
+      if (restante < 0) {
+        clearInterval(timer);
+        resolve();
+      }
+    }, 1000);
+  });
+      }      $atividadesContainer.appendChild(label);
     });
   };
 
