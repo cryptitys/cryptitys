@@ -1,40 +1,82 @@
-const backendURL = 'https://node-express-production-b087.up.railway.app';
+const loginForm = document.getElementById("loginForm");
+const raInput = document.getElementById("raInput");
+const passwordInput = document.getElementById("passwordInput");
+const togglePassword = document.getElementById("togglePassword");
+const activitySection = document.getElementById("activitySection");
+const activityList = document.getElementById("activityList");
+const executeBtn = document.getElementById("executeSelected");
+const selectAllCheckbox = document.getElementById("selectAll");
+const studyTimeInput = document.getElementById("studyTime");
 
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
+let activities = [];
+
+togglePassword.addEventListener("click", () => {
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+});
+
+loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const ra = document.getElementById('ra').value.trim();
-  const senha = document.getElementById('senha').value.trim();
+  const ra = raInput.value.trim();
+  const senha = passwordInput.value.trim();
 
-  const response = await fetch(`${backendURL}/api/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ra, senha })
-  });
+  try {
+    const response = await fetch("https://node-express-production-b087.up.railway.app/api/atividades", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ra, senha }),
+    });
 
-  const data = await response.json();
-  if (data.success) {
-    localStorage.setItem('token', data.token);
-    loadActivities();
-  } else {
-    alert('Erro ao fazer login.');
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message);
+
+    activities = result.atividades;
+    activityList.innerHTML = "";
+    activities.forEach((atividade, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<label><input type="checkbox" class="atividade-checkbox" data-id="${atividade.id}" /> ${atividade.titulo}</label>`;
+      activityList.appendChild(li);
+    });
+
+    activitySection.classList.remove("hidden");
+    loginForm.classList.add("hidden");
+  } catch (err) {
+    alert("Erro: " + err.message);
   }
 });
 
-async function loadActivities() {
-  document.getElementById('loginForm').classList.add('hidden');
-  document.getElementById('activitySection').classList.remove('hidden');
-
-  const res = await fetch(`${backendURL}/api/atividades`, {
-    headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('token')
-    }
+selectAllCheckbox.addEventListener("change", () => {
+  document.querySelectorAll(".atividade-checkbox").forEach(cb => {
+    cb.checked = selectAllCheckbox.checked;
   });
+});
 
-  const atividades = await res.json();
-  const container = document.getElementById('activitiesContainer');
-  container.innerHTML = '';
+executeBtn.addEventListener("click", async () => {
+  const selected = [...document.querySelectorAll(".atividade-checkbox")]
+    .filter(cb => cb.checked)
+    .map(cb => cb.dataset.id);
 
-  atividades.forEach((atividade, index) => {
+  const tempo = parseInt(studyTimeInput.value, 10);
+  if (selected.length === 0 || isNaN(tempo)) {
+    return alert("Selecione atividades e defina tempo válido.");
+  }
+
+  for (const id of selected) {
+    const atividade = activities.find(a => a.id === id);
+    if (!atividade) continue;
+
+    const tempoMs = tempo * 60 * 1000;
+    await new Promise(r => setTimeout(r, tempoMs));
+
+    await fetch("https://node-express-production-b087.up.railway.app/api/concluir", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, resposta: atividade.resposta }),
+    });
+  }
+
+  alert("Todas as atividades selecionadas foram concluídas.");
+});  atividades.forEach((atividade, index) => {
     const el = document.createElement('div');
     el.innerHTML = `<label><input type="checkbox" value="${atividade.id}" checked /> ${atividade.nome}</label>`;
     container.appendChild(el);
