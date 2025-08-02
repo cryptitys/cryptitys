@@ -1,40 +1,59 @@
-/* === CRYPTITYS - CSS Futurista === */
+@font-face {
+  font-family: 'Poppins';
+  src: url('Poppins-Regular.woff2') format('woff2');
+  font-weight: normal;
+}
 
-:root { --bg: #0f111a; --bg-secondary: #1c1f2e; --accent: #7f5af0; --accent-light: #a78bfa; --text: #e4e4e7; --text-light: #a1a1aa; --danger: #f43f5e; --success: #22c55e; }
+:root {
+  --bg-color: #0a0a1a;
+  --primary: #7f5af0;
+  --accent: #2cb67d;
+  --text: #fffffe;
+}
 
-body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: var(--text); }
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-color);
+  color: var(--text);
+}
 
-.container { max-width: 960px; margin: auto; padding: 20px; }
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+  text-align: center;
+}
 
-header { text-align: center; margin-bottom: 30px; }
+input, button {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+}
 
-header h1 { font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem; }
+button {
+  background: var(--primary);
+  color: white;
+  transition: 0.3s;
+}
 
-.subtitle { font-weight: 300; color: var(--text-light); }
+button:hover {
+  background: var(--accent);
+  color: black;
+}
 
-.section { background: var(--bg-secondary); padding: 20px; border-radius: 12px; box-shadow: 0 0 15px rgba(127, 90, 240, 0.2); margin-bottom: 20px; }
+.hidden {
+  display: none;
+}
 
-.input-group { margin-bottom: 15px; }
-
-.input-group label { display: block; margin-bottom: 5px; color: var(--text-light); }
-
-.input-wrapper { position: relative; }
-
-input[type="text"], input[type="password"], input[type="number"] { width: 100%; padding: 10px 14px; border-radius: 8px; border: none; background: #2a2d3f; color: var(--text); font-size: 1rem; }
-
-button { background-color: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.3s; }
-
-button:hover { background-color: var(--accent-light); }
-
-.clear-btn, .toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.2rem; color: var(--text-light); cursor: pointer; }
-
-.button-group, .modal-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-
-.hidden { display: none; }
-
-.modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-
-.modal-content { background: var(--bg-secondary); padding: 30px; border-radius: 12px; width: 100%; max-width: 600px; box-shadow: 0 0 30px rgba(127, 90, 240, 0.3); }
+.cronometro {
+  font-size: 2rem;
+  margin-top: 1rem;
+  color: var(--accent);
+    }.modal-content { background: var(--bg-secondary); padding: 30px; border-radius: 12px; width: 100%; max-width: 600px; box-shadow: 0 0 30px rgba(127, 90, 240, 0.3); }
 
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 
