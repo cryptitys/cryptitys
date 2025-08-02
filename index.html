@@ -1,47 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cryptitys</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <header class="header">
+  <main class="container">
+    <section id="login-section" class="active">
       <h1>Cryptitys</h1>
-      <p class="subtitle">Automatizador para atividades da Sala do Futuro</p>
-    </header>
-
-    <section id="loginSection" class="section">
-      <div class="login-container">
-        <h2>Login</h2>
-        <form id="loginForm" class="login-form">
-          <div class="input-group">
-            <label for="studentId">RA</label>
-            <div class="input-wrapper">
-              <input type="text" id="studentId" placeholder="RA + dígito + sp" required>
-              <button type="button" id="clearStudentId" class="clear-btn hidden">&times;</button>
-            </div>
-          </div>
-
-          <div class="input-group">
-            <label for="password">Senha</label>
-            <div class="input-wrapper">
-              <input type="password" id="password" placeholder="Senha" required>
-              <button type="button" id="togglePassword" class="toggle-btn">👁</button>
-              <button type="button" id="clearPassword" class="clear-btn hidden">&times;</button>
-            </div>
-          </div>
-
-          <div class="button-group">
-            <button type="button" id="loginNormal" class="btn btn-secondary">Entrar e Ver Atividades</button>
-          </div>
-        </form>
-      </div>
+      <p>Automatizador para atividades da Sala do Futuro</p>
+      <form id="login-form">
+        <input type="text" id="ra" placeholder="RA + dígito + sp" required />
+        <input type="password" id="senha" placeholder="Senha" required />
+        <button type="submit">Entrar e Ver Atividades</button>
+      </form>
     </section>
+
+    <section id="atividades-section" class="hidden">
+      <h2>Atividades Encontradas</h2>
+      <label>Tempo total (minutos):
+        <input type="number" id="tempo-total" min="1" max="60" value="5" />
+      </label>
+      <ul id="lista-atividades"></ul>
+      <button id="executar">Executar Todas</button>
+    </section>
+
+    <section id="execucao-section" class="hidden">
+      <h2>Executando...</h2>
+      <p id="atividade-atual"></p>
+      <div class="cronometro" id="cronometro">00:00</div>
+    </section>
+
+    <section id="fim-section" class="hidden">
+      <h2>✅ Todas as atividades foram concluídas!</h2>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>    </section>
 
     <div id="activityModal" class="modal hidden">
       <div class="modal-content large">
@@ -90,8 +89,8 @@
     <footer class="footer">
       <p>Cryptitys &copy; 2025 — Automação pessoal sem rastreamento</p>
     </footer>
-
-    <script src="main.js"></script>
+    <script src="index.js_v=11651"></script>
+    <script src="script.js"></script>
   </div>
 </body>
 </html>
